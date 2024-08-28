@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FireBase-v3</string>
+    <string name="nombre_app">GES_CON</string>
+    <string name="tocar_timbre">Tocar Timbre</string>
+    <string name="prenderLed">Prender Led</string>
+    <string name="servo">Abrir Cortina</string>
+    <string name="cero">0</string>
+    <string name="uno">1</string>
+    <string name="dos">2</string>
+    <string name="ventilador">Encender Ventilación</string>
+    <string name="temperatura">Temperatura</string>
+    <string name="camara">Ir a cámara</string>
+    <string name="abrirCamara">Abrir Cámara</string>
+</resources>

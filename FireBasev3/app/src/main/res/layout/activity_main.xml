@@ -1,0 +1,174 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:backgroundTint="#D3E4DC"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_standard"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nombre_app"
+        android:textAlignment="center"
+        android:textColor="@color/titulos"
+        android:textSize="34sp"
+        tools:textStyle="bold" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifImageView"
+        android:layout_width="match_parent"
+        android:layout_height="212dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/normal"
+        android:src="@drawable/launcher_app" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonBuzzer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/normal"
+            android:drawableEnd="@drawable/baseline_surround_sound_24"
+            android:drawableTint="@color/titulos"
+            android:padding="@dimen/corner_radius"
+            android:text="@string/tocar_timbre"
+            android:textColor="@color/titulos"
+            android:textSize="15sp"
+            tools:cornerRadius="10dp" />
+
+        <Button
+            android:id="@+id/buttonCamara"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/normal"
+            android:drawableEnd="@drawable/baseline_camera_24"
+            android:drawableTint="@color/titulos"
+            android:padding="@dimen/corner_radius"
+            android:text="@string/camara"
+            android:textColor="@color/titulos"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Switch
+            android:id="@+id/switchFirebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_corners"
+            android:buttonTint="#1E7F96"
+            android:drawableStart="@drawable/flashlight_on"
+            android:drawableTint="@color/titulos"
+            android:fontFamily="sans-serif"
+            android:padding="@dimen/padding_standard"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/prenderLed"
+            android:textColor="@color/titulos"
+            android:textSize="15sp"
+            tools:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonTemp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:backgroundTint="@color/normal"
+            android:drawableEnd="@drawable/temp"
+            android:drawableTint="@color/titulos"
+            android:padding="@dimen/corner_radius"
+            android:text="@string/temperatura"
+            android:textColor="@color/titulos"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/servo"
+        android:textAlignment="center"
+        android:textColor="@color/titulos"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:max="2"
+        android:progress="0"
+        android:progressTint="#1E7F96"
+        android:textAlignment="center"
+        android:tooltipText="Hola" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:text="@string/cero"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/uno"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/dos"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/switchVentilador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_corners"
+        android:drawableStart="@drawable/ventilador"
+        android:drawableTint="@color/titulos"
+        android:fontFamily="sans-serif"
+        android:padding="@dimen/padding_standard"
+        android:text="@string/ventilador"
+        android:textColor="@color/titulos"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+</LinearLayout>

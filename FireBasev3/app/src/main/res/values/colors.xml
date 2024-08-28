@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="titulos">#303C46</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background_dark">#1A1A2E</color>
+    <color name="text_light">#EAEAEA</color>
+    <color name="button_color">#F05454</color>
+    <color name="button_text">#FFFFFF</color>
+    <color name="elevation_color">#2E2E3A</color>
+    <color name="normal">#D3E4DC</color>
+</resources>
