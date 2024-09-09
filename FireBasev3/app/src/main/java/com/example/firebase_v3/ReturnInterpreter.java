@@ -1,4 +1,5 @@
 package com.example.firebase_v3;
+// Autor Jose Vasquez
 
 public interface ReturnInterpreter {
 
@@ -13,7 +14,7 @@ public interface ReturnInterpreter {
      * @param maxConfidence El índice del valor de confianza más alto en el array 'confidence'.
      *                      Este parámetro indica la clase que el modelo considera más probable
      *                      para la entrada dada.
-     *
+
      * Las implementaciones de este método deberían manejar estos resultados de la manera
      * apropiada para la aplicación, como mostrar la clase predicha al usuario,
      * almacenar los resultados, o realizar acciones basadas en la clasificación.

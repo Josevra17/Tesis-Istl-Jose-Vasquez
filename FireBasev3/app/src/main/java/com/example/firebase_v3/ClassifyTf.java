@@ -11,6 +11,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+// Autor Jose Vasquez
 
 public class ClassifyTf {
     // Tamaño de entrada requerido por el modelo TensorFlow Lite
@@ -71,10 +72,10 @@ public class ClassifyTf {
      */
     private TensorBuffer prepareInputFeature(Bitmap bitmap) {
         // Crea un TensorBuffer con el tamaño y tipo de datos adecuados
-        TensorBuffer inputFeature = TensorBuffer.createFixedSize(new int[]{1, INPUT_SIZE, INPUT_SIZE, 3}, DataType.UINT8);
+        TensorBuffer inputFeature = TensorBuffer.createFixedSize(new int[]{1, INPUT_SIZE, INPUT_SIZE, 3}, DataType.FLOAT32);
 
         // Prepara un ByteBuffer para almacenar los datos de la imagen
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(INPUT_SIZE * INPUT_SIZE * 3);
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * INPUT_SIZE * INPUT_SIZE * 3);
         byteBuffer.order(ByteOrder.nativeOrder());
 
         // Obtiene los valores de los píxeles del bitmap
@@ -83,9 +84,13 @@ public class ClassifyTf {
 
         // Convierte los valores de los píxeles al formato requerido por el modelo
         for (int pixelValue : intValues) {
-            byteBuffer.put((byte) ((pixelValue >> 16) & 0xFF)); // Formato color Rojo
-            byteBuffer.put((byte) ((pixelValue >> 8) & 0xFF));  // Formato color Verde
-            byteBuffer.put((byte) (pixelValue & 0xFF));         // Formato color Azul
+            float red = ((pixelValue >> 16) & 0xFF) / 255.0f;
+            float green = ((pixelValue >> 8) & 0xFF) / 255.0f;
+            float blue = (pixelValue & 0xFF) / 255.0f;
+
+            byteBuffer.putFloat(red);
+            byteBuffer.putFloat(green);
+            byteBuffer.putFloat(blue);        // Formato color Azul
         }
 
         // Carga el ByteBuffer en el TensorBuffer

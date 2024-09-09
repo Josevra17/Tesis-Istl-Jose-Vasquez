@@ -2,13 +2,18 @@ package com.example.firebase_v3;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,91 +24,85 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.firebase_v3.databinding.ActivityCamaraiBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ingenieriiajhr.jhrCameraX.BitmapResponse;
 import com.ingenieriiajhr.jhrCameraX.CameraJhr;
-
+// Autor Jose Vasquez
 public class CamarAI extends AppCompatActivity {
-
-    // Ligadura o binding para lograr el acceso eficiente a las vistas
     private @NonNull ActivityCamaraiBinding binding;
-
-    // Declaraciones para iniciar la camara y reconocimiento de las imagenes en tiempo real
     private CameraJhr cameraJhr;
     private ClassifyTf classifyTf;
     private Button activateCameraButton;
+    private FloatingActionButton fabAyuda;
+    private android.app.AlertDialog temperatureDialog;
+    private TextView temperatureTextView;
+    private Handler handler = new Handler();
+    private boolean isDialogShowing = false;
 
-    // Constantes para usar en la configuracion de la camara y solicitud de los permisos
     public static final int INPUT_SIZE = 224;
     public static final int REQUEST_CAMERA_PERMISSION = 200;
 
-    //Arreglo que contiene las clases con las que ha sido entrenado el modelo TFLite
-    private String[] classes = {"Vacio", "Prender Luz", "Apagar Luz", "Abrir Cortinas", "Temperatura"};
+    private String[] classes = {"Vacio","Prender Luz","Apagar Luz","Abrir Cortinas","Temperatura","Cerrar Cortinas","Timbre","Prender Ventilador","Apagar Ventilador"
+    };
 
     // Variables para la detección consistente y el control de comandos
     private String detectedClass = "";
     private long detectionStartTime = 0;
-    private static final long DETECTION_PERIOD =2000; // 2 segundos para poder varificar gesto
+    private static final long DETECTION_PERIOD = 3000; // 2 segundos
+    private static final long COMMAND_DELAY = 5000; // 5 segundos de espera después de la confirmación
     private boolean waitingForConfirmation = false;
     private long lastCommandTime = 0;
 
-    // Referencias de Firebase para el control de los dispositivos
-    private DatabaseReference myRef, refseek, refBuzz;
+    // Referencias de Firebase
+    private DatabaseReference myRef, refseek, refBuzz, refTemp, refVent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCamaraiBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("CamarAI", "Iniciando componentes y activando cámara.");
-        inciarComponentes();
-        activarCamara();
-        inicialiazarRefrenciasFirebase();
-    }
 
-    //Inicializa los componentes principales para la camara
-    private void inciarComponentes(){
         classifyTf = new ClassifyTf(this);
         cameraJhr = new CameraJhr(this);
+
         activateCameraButton = findViewById(R.id.button_activate_camera);
-        Log.d("CamarAI", "Componentes iniciados correctamente.");
-
-    }
-
-    //Darle funcionlidad al boton que activa la camara
-    private void activarCamara(){
         activateCameraButton.setOnClickListener(v -> {
-            Log.d("CamarAI", "Botón de activación de cámara presionado.");
-            permisosCamara();
+            if (ContextCompat.checkSelfPermission(CamarAI.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                showCameraPreview();
+            } else {
+                ActivityCompat.requestPermissions(CamarAI.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            }
         });
-    }
 
-    //Inicializa la base de datos y las referencias de Firebase
-    private void inicialiazarRefrenciasFirebase(){
+        fabAyuda = findViewById(R.id.fab_help);
+        fabAyuda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(CamarAI.this, AyudaActivity.class);
+                startActivity(i);
+            }
+        });
+
         // Inicializar referencias de Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Led");
         refseek = database.getReference("Cervo");
         refBuzz = database.getReference("Buzzer");
+        refTemp = database.getReference("Temperatura");
+        refVent = database.getReference("Ventilador");
+
     }
 
-    //Metodo encargado de verificar los permisos de uso de la camara
-    private void permisosCamara(){
-        if (ContextCompat.checkSelfPermission(CamarAI.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            showCameraPreview();
-        } else {
-            ActivityCompat.requestPermissions(CamarAI.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-        }
-    }
-
-    //Muestra una vista previa de la camara
     private void showCameraPreview() {
         binding.cameraPreview.setVisibility(View.VISIBLE);
         activateCameraButton.setVisibility(View.GONE);
         startCameraJhr();
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -117,99 +116,214 @@ public class CamarAI extends AppCompatActivity {
         }
     }
 
-
-    // Inicia la cámara y configura el procesamiento de imágenes
     private void startCameraJhr() {
-        cameraJhr.addlistenerBitmap(this::processImage);
+        cameraJhr.addlistenerBitmap(new BitmapResponse() {
+            @Override
+            public void bitmapReturn(@Nullable Bitmap bitmap) {
+                if (bitmap != null) {
+                    classifyImage(bitmap);
+                }
+            }
+        });
+
         cameraJhr.initBitmap();
         cameraJhr.initImageProxy();
         cameraJhr.start(0, 0, binding.cameraPreview, true, false, true);
     }
 
-    // Procesa la imagen capturada
-    private void processImage(@Nullable Bitmap bitmap) {
-        if (bitmap != null) {
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
-            classifyTf.listenerInterpreter(this::handleClassificationResult);
-            classifyTf.classify(scaledBitmap);
-        }
-    }
+    private void classifyImage(Bitmap bitmap) {
+        Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmap, INPUT_SIZE, INPUT_SIZE, false);
+        classifyTf.listenerInterpreter(new ReturnInterpreter() {
+            @Override
+            public void classify(float[] confidence, int maxConfidence) {
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void run() {
+                        binding.txtResult.setText(
+                                //classes[0] + ": " + confidence[0] + "\n" +
+                                  //      classes[1] + ": " + confidence[1] + "\n" +
+                                    //    classes[2] + ": " + confidence[2] + "\n" +
+                                      //  classes[3] + ": " + confidence[3] + "\n" +
+                                        //classes[4] + ": " + confidence[4] + "\n" +
+                                        "Acción: " + classes[maxConfidence]
+                        );
 
-    // Maneja el resultado de la clasificación
-    private void handleClassificationResult(float[] confidence, int maxConfidence) {
-        runOnUiThread(() -> {
-            updateResultText(confidence, maxConfidence);
-            checkForGestureDetection(classes[maxConfidence], confidence[maxConfidence]);
-        });
-    }
+                        String currentClass = classes[maxConfidence];
+                        long currentTime = System.currentTimeMillis();
 
-    // Actualiza el texto de resultado en la UI
-    private void updateResultText(float[] confidence, int maxConfidence) {
-        StringBuilder resultText = new StringBuilder();
-        for (int i = 0; i < classes.length; i++) {
-            resultText.append(classes[i]).append(": ").append(confidence[i]).append("\n");
-        }
-        resultText.append("Mejor: ").append(classes[maxConfidence]);
-        binding.txtResult.setText(resultText.toString());
-    }
-
-    // Verifica si se ha detectado un gesto válido
-    private void checkForGestureDetection(String currentClass, float confidence) {
-        long currentTime = System.currentTimeMillis();
-        if (!waitingForConfirmation && confidence > 0.7) {
-            if (currentClass.equals(detectedClass) && currentTime - detectionStartTime > DETECTION_PERIOD) {
-                showConfirmationDialog(currentClass);
-                waitingForConfirmation = true;
-            } else {
-                detectedClass = currentClass;
-                detectionStartTime = currentTime;
+                        if (!waitingForConfirmation && confidence[maxConfidence] > 0.7) {
+                            if (currentClass.equals(detectedClass)) {
+                                // Si la clase es la misma, verifica si ha pasado el tiempo de detección
+                                if (currentTime - detectionStartTime > DETECTION_PERIOD) {
+                                    // Muestra un cuadro de diálogo para la confirmación
+                                    showConfirmationDialog(currentClass);
+                                    waitingForConfirmation = true;
+                                }
+                            } else {
+                                // Si la clase es diferente, reinicia el temporizador de detección
+                                detectedClass = currentClass;
+                                detectionStartTime = currentTime;
+                            }
+                        }
+                    }
+                });
             }
-        }
+        });
+
+        classifyTf.classify(bitmapScale);
     }
 
-    // Muestra un diálogo de confirmación para la acción detectada
     private void showConfirmationDialog(String actionClass) {
-        String message = getMessageForAction(actionClass);
+        String message = "";
+
+        switch (actionClass) {
+            case "Prender Luz":
+                message = "Se encenderá la luz.";
+                break;
+            case "Apagar Luz":
+                message = "Se apagará la luz.";
+                break;
+            case "Abrir Cortinas":
+                message = "Se abrirán las cortinas.";
+                break;
+            case "Temperatura":
+                showTemperatureDialog();
+                return;  // No continuar con el flujo normal si es "Temperatura"
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle("Confirmación")
                 .setMessage(message)
-                .setPositiveButton("Aceptar", (dialog, which) -> executeAction(actionClass))
-                .setNegativeButton("Cancelar", (dialog, which) -> waitingForConfirmation = false)
+                .setPositiveButton("Aceptar", (dialog, which) -> {
+                    executeAction(actionClass);
+                    startDetectionDelay();
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> {
+                    waitingForConfirmation = false;
+                    startDetectionDelay();
+                })
                 .show();
     }
 
-    // Obtiene el mensaje correspondiente a la acción detectada
-    private String getMessageForAction(String actionClass) {
-        switch (actionClass) {
-            case "Prender Luz": return "Se encenderá la luz.";
-            case "Apagar Luz": return "Se apagará la luz.";
-            case "Abrir Cortinas": return "Se abrirán las cortinas.";
-            case "Temperatura": return "Se medirá la temperatura.";
-            default: return "Acción no reconocida.";
-        }
+    // Método para iniciar un retraso antes de permitir una nueva detección
+    private void startDetectionDelay() {
+        waitingForConfirmation = true;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                waitingForConfirmation = false;
+            }
+        }, COMMAND_DELAY);  // Esperar 5 segundos antes de permitir una nueva detección
     }
 
-    // Ejecuta la acción correspondiente al gesto detectado
     private void executeAction(String actionClass) {
         switch (actionClass) {
             case "Prender Luz":
-                myRef.setValue(1);
+                myRef.setValue(1);  // Enviar comando para encender la luz a Firebase
                 break;
             case "Apagar Luz":
-                myRef.setValue(0);
+                myRef.setValue(0);  // Enviar comando para apagar la luz a Firebase
                 break;
             case "Abrir Cortinas":
-                refseek.setValue(2);
+                refseek.setValue(1);  // Enviar comando para abrir cortinas a Firebase
                 break;
             case "Temperatura":
-
+                showTemperatureDialog();
+                break;
+            case "Cerrar Cortinas":
+                refseek.setValue(0);  // Enviar comando para cerrar cortinas a Firebase
+                break;
+            case "Timbre":
+                refBuzz.setValue(1);  // Enviar comando para tocar timbre a Firebase
+                break;
+            case "Prender Ventilador":
+                refVent.setValue(1);  // Enviar comando para prender ventilador a Firebase
+                break;
+            case "Apagar Ventilador":
+                refVent.setValue(0);  // Enviar comando para apagar ventilador a Firebase
                 break;
         }
+
+        // Restablecer el estado para la siguiente detección
         waitingForConfirmation = false;
         lastCommandTime = System.currentTimeMillis();
     }
+    private void showTemperatureDialog() {
+        Log.d("CamarAI", "Mostrando dialogo con temperatura.");
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.temperature, null);
+        temperatureTextView = dialogView.findViewById(R.id.temperatureText);
 
-    // Método de utilidad para rotar bitmaps (si es necesario)
+        builder.setView(dialogView)
+                .setTitle("Temperatura")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        isDialogShowing = false;
+                        Log.d("MainActivity", "Dialogo de temperatura cerrado");
+                    }
+                });
+        temperatureDialog = builder.create();
+        temperatureDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                isDialogShowing = false;
+            }
+        });
+
+        temperatureDialog.show();
+        isDialogShowing = true;
+        startTemperatureUpdates();
+    }
+
+    //Metoodo para iniciar la actualizacion de la temperatura cada segundo
+    private void startTemperatureUpdates() {
+        Log.d("MainActivity", "Iniciando actualizadcion de temperatura");
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (isDialogShowing) {
+                    updateTemperature();
+                    handler.postDelayed(this, 1000); // Actualiza cada segundo
+                }
+            }
+        });
+    }
+
+    //Metodo para actualizar la vista de la temperatura si esta cambia
+    private void updateTemperature() {
+        refTemp.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Double temperature = dataSnapshot.getValue(Double.class);
+                    if (temperature != null) {
+                        Log.d("MainActivity", "Temperature actualizada: " + temperature);
+
+                        temperatureTextView.setText(String.format("%.1f °C", temperature));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("MainActivity", "Error en carga de temperatura: " + databaseError.getMessage());
+
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (temperatureDialog != null && temperatureDialog.isShowing()) {
+            temperatureDialog.dismiss();
+        }
+        handler.removeCallbacksAndMessages(null);
+    }
     public static Bitmap rotateBitmap(Bitmap bitmap, float degrees) {
         Matrix matrix = new Matrix();
         matrix.postRotate(degrees);

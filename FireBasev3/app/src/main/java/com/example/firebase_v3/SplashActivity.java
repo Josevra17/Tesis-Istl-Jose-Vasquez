@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
+// Autor Jose Vasquez
 
 public class SplashActivity extends AppCompatActivity {
     private static final long DURACION_SPLASH = 1500; // 1.5 segundos

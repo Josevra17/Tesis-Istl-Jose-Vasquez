@@ -11,4 +11,24 @@
     <string name="temperatura">Temperatura</string>
     <string name="camara">Ir a cámara</string>
     <string name="abrirCamara">Abrir Cámara</string>
+    <string name="ayuda">Ayuda</string>
+    <string name="tituloAyuda">Gestos para el reconocimiento</string>
+    <string name="gesto1">Gesto 1</string>
+    <string name="gesto2">Gesto 2</string>
+    <string name="gesto3">Gesto 3</string>
+    <string name="gesto4">Gesto 4</string>
+    <string name="gesto5">Gesto 5</string>
+    <string name="gesto6">Gesto 6</string>
+    <string name="gesto7">Gesto 7</string>
+    <string name="gesto8">Gesto 8</string>
+    <string name="descripcion1">Gesto para Abrir Cortina</string>
+    <string name="descripcion2">Gesto para Cerrar Cortina</string>
+    <string name="descripcion3">Gesto para Encender Luz</string>
+    <string name="descripcion4">Gesto para Apagar Luz</string>
+    <string name="descripcion5">Gesto para Mostrar Temperatura</string>
+    <string name="descripcion6">Gesto para Tocar Timbre</string>
+    <string name="descripcion7">Gesto para Encender Ventilador</string>
+    <string name="descripcion8">Gesto para Apagar Ventilador</string>
+
+
 </resources>

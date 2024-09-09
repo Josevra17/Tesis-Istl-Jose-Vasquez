@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/normal"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Título de la Ayuda -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/tituloAyuda"
+            android:textColor="@color/titulos"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Imagen 1 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto1"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto1" />
+
+        <!-- Descripción del Gesto 1 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion1"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Imagen 2 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto2"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto2" />
+
+        <!-- Descripción del Gesto 2 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion4"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 3 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto3"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto3" />
+
+        <!-- Descripción del Gesto 3 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion8"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 4 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto4"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto4" />
+
+        <!-- Descripción del Gesto 4 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion2"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 5 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto5"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto5" />
+
+        <!-- Descripción del Gesto 5 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion3"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 6 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto6"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto6" />
+
+        <!-- Descripción del Gesto 6 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion7"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 7 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto7"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto7" />
+
+        <!-- Descripción del Gesto 7 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion5"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+        <!-- Imagen 8 -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="@string/gesto8"
+            android:scaleType="centerInside"
+            android:src="@drawable/gesto8" />
+
+        <!-- Descripción del Gesto 8 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp"
+            android:text="@string/descripcion6"
+            android:textColor="@color/titulos"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+</ScrollView>
